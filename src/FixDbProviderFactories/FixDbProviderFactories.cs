@@ -68,7 +68,7 @@ namespace FixDbProviderFactories
 
         private string GetTemporaryFilePath(string filePath)
         {
-            return Path.Combine(Path.GetDirectoryName(filePath), Path.GetRandomFileName());
+            return Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }
     }
 }
