@@ -7,7 +7,7 @@ namespace FixDbProviderFactories
     {
         static void Main(string[] args)
         {
-            new FixDbProviderFactories().Fix(RuntimeEnvironment.SystemConfigurationFile);
+            new FixDbProviderFactories(RuntimeEnvironment.SystemConfigurationFile).Fix();
         }
     }
 }

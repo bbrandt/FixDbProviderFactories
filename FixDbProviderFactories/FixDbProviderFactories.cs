@@ -11,11 +11,24 @@ namespace FixDbProviderFactories
 {
     public class FixDbProviderFactories
     {
-        public void Fix(string machineConfigFilePath)
-        {
-            XDocument xdoc = XDocument.Load(machineConfigFilePath);
+        private readonly string _machineConfigFilePath;
 
-            XElement[] elements = xdoc.XPathSelectElements("//configuration/system.data/DbProviderFactories").ToArray();
+        private readonly string _temporaryMachineConfigFilePath;
+
+        private readonly XDocument _xdoc;
+
+        public FixDbProviderFactories(string machineConfigFilePath)
+        {
+            _machineConfigFilePath = machineConfigFilePath;
+
+            _temporaryMachineConfigFilePath = GetTemporaryFilePath(_machineConfigFilePath);
+
+            _xdoc = XDocument.Load(_machineConfigFilePath);
+        }
+
+        public void Fix()
+        {
+            XElement[] elements = _xdoc.XPathSelectElements("//configuration/system.data/DbProviderFactories").ToArray();
 
             if (elements.Any())
             {
@@ -27,8 +40,7 @@ namespace FixDbProviderFactories
             }
 
             // Let's not update the users machine.config just yet
-            var updatedMachineConfigFilePath = GetTemporaryFilePath(machineConfigFilePath);
-            xdoc.Save(machineConfigFilePath);
+            _xdoc.Save(_temporaryMachineConfigFilePath);
         }
 
         private string GetTemporaryFilePath(string filePath)
