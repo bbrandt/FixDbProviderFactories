@@ -7,7 +7,13 @@ namespace FixDbProviderFactories
     {
         static void Main(string[] args)
         {
-            new FixDbProviderFactories(RuntimeEnvironment.SystemConfigurationFile).Fix();
+            var updatedConfig = new FixDbProviderFactories(RuntimeEnvironment.SystemConfigurationFile).Fix();
+
+            Console.WriteLine("Original machine.config update:");
+            Console.WriteLine($"\t\t{RuntimeEnvironment.SystemConfigurationFile}");
+
+            Console.WriteLine("Suggested machine.config update:");
+            Console.WriteLine($"\t\t{updatedConfig}");
         }
     }
 }

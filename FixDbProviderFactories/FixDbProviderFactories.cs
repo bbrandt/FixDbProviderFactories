@@ -26,21 +26,44 @@ namespace FixDbProviderFactories
             _xdoc = XDocument.Load(_machineConfigFilePath);
         }
 
-        public void Fix()
+        public string Fix()
         {
             XElement[] elements = _xdoc.XPathSelectElements("//configuration/system.data/DbProviderFactories").ToArray();
 
-            if (elements.Any())
-            {
-                foreach (XElement anElement in elements)
-                {
-                    if (!anElement.HasElements)
-                        anElement.Remove();
-                }
-            }
+            MergeToSingleElement(elements);
 
             // Let's not update the users machine.config just yet
             _xdoc.Save(_temporaryMachineConfigFilePath);
+
+            return _temporaryMachineConfigFilePath;
+        }
+
+        private static void MergeToSingleElement(XElement[] elements)
+        {
+            if (elements.Any())
+            {
+                var singleElement = elements.First();
+
+                foreach (XElement anElement in elements)
+                {
+                    if (anElement != singleElement)
+                    {
+                        MoveChildElements(anElement, singleElement);
+                        if (!anElement.HasElements)
+                            anElement.Remove();
+                    }
+                }
+            }
+        }
+
+        private static void MoveChildElements(XElement source, XElement target)
+        {
+            foreach (var child in source.Nodes())
+            {
+                target.Add(child);
+            }
+
+            source.RemoveNodes();
         }
 
         private string GetTemporaryFilePath(string filePath)
